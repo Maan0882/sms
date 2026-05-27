@@ -20,43 +20,46 @@ class SuperAdminSeeder extends Seeder
 
         // ── 1. Define all permissions ─────────────────────────────────
         $permissions = [
-            // Users
+            // ── User permissions ───────────────────────────────
             'user.view',
             'user.create',
             'user.update',
             'user.delete',
             'user.impersonate',
 
-            // Roles & permissions
+            // ── Role permissions ───────────────────────────────
             'role.view',
             'role.create',
             'role.update',
             'role.delete',
+
+            // ── Permission permissions ─────────────────────────
             'permission.view',
             'permission.assign',
 
-            // Admins
+            // ── Admin permissions ──────────────────────────────
             'admin.view',
             'admin.create',
             'admin.update',
             'admin.delete',
 
-            // Mentors
+            // ── Mentor permissions ─────────────────────────────
             'mentor.view',
             'mentor.create',
             'mentor.update',
             'mentor.delete',
 
-            // Students
+            // ── Student permissions ────────────────────────────
             'student.view',
             'student.create',
             'student.update',
             'student.delete',
 
-            // System
+            // ── System permissions ─────────────────────────────
             'settings.view',
             'settings.update',
             'audit_log.view',
+            'audit_log.export',
         ];
 
         foreach ($permissions as $permission) {

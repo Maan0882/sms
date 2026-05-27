@@ -10,22 +10,38 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use Spatie\Permission\Traits\HasRoles;
 
 
 // #[Fillable(['name', 'email', 'password'])]
 // #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, AuditableTrait;
 
- protected $fillable = [
+    protected $fillable = [
         'name',
         'email',
         'password',
         'is_active',
         'avatar_url',
+    ];
+
+    // What fields to track changes on
+    protected array $auditInclude = [
+        'name',
+        'email',
+        'is_active',
+        'avatar_url',
+    ];
+
+    // What fields to never track (sensitive)
+    protected array $auditExclude = [
+        'password',
+        'remember_token',
     ];
 
     protected $hidden = [
