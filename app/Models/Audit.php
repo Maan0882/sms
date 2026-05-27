@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use OwenIt\Auditing\Models\Audit as AuditModel;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Audit extends AuditModel
 {
-    use SoftDeletes;
     
     protected $casts = [
         'old_values' => 'array',
