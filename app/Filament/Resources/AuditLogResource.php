@@ -8,6 +8,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AuditLogResource extends Resource
 {
@@ -140,7 +142,7 @@ class AuditLogResource extends Resource
                             ->when($data['from'],  fn ($q) => $q->whereDate('created_at', '>=', $data['from']))
                             ->when($data['until'], fn ($q) => $q->whereDate('created_at', '<=', $data['until']));
                     }),
-
+                Tables\Filters\TrashedFilter::make(),
             ])
 
             // View full audit detail in a slide-over panel
@@ -154,6 +156,10 @@ class AuditLogResource extends Resource
                         'filament.modals.audit-detail',
                         ['audit' => $record]
                     )),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
             ])
 
             ->defaultSort('created_at', 'desc')
@@ -175,5 +181,13 @@ class AuditLogResource extends Resource
         return [
             'index' => Pages\ListAuditLogs::route('/'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
