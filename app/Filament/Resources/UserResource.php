@@ -218,7 +218,7 @@ class UserResource extends Resource
                             ->send();
                     }),
 
-                // Delete — protected
+                // Change DeleteAction to support soft deletion, and add Restore/ForceDelete
                 Tables\Actions\DeleteAction::make()
                     ->before(function (User $record, Tables\Actions\DeleteAction $action) {
                         if ($record->isSuperAdmin()) {
@@ -229,26 +229,38 @@ class UserResource extends Resource
                             $action->cancel();
                         }
                     }),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->before(function (User $record, Tables\Actions\ForceDeleteAction $action) {
+                        if ($record->isSuperAdmin()) {
+                            Notification::make()
+                                ->title('Cannot permanently delete a Super Admin account')
+                                ->danger()
+                                ->send();
+                            $action->cancel();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    // Swap to soft delete bulk actions
+                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('activate')
+                        ->label('Activate Selected')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(fn ($records) => $records->each->update(['is_active' => true]))
+                        ->deselectRecordsAfterCompletion(),
 
-                Tables\Actions\DeleteBulkAction::make(),
-
-                Tables\Actions\BulkAction::make('activate')
-                    ->label('Activate Selected')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->action(fn ($records) => $records->each->update(['is_active' => true]))
-                    ->deselectRecordsAfterCompletion(),
-
-                Tables\Actions\BulkAction::make('deactivate')
-                    ->label('Deactivate Selected')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->update(['is_active' => false]))
-                    ->deselectRecordsAfterCompletion(),
+                    Tables\Actions\BulkAction::make('deactivate')
+                        ->label('Deactivate Selected')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['is_active' => false]))
+                        ->deselectRecordsAfterCompletion(),
 
             ]),
         ])
@@ -275,23 +287,14 @@ class UserResource extends Resource
         ];
     }
 
-    // ── GLOBAL SEARCH ──────────────────────────────────────────────────
+    // ── SOFT DELETING SCOPES FOR FILAMENT ──────────────────────────────
+    // These methods make sure Filament handles the querying of active vs trashed records properly
 
-    // public static function getGlobalSearchResultTitle(User $record): string
-    // {
-    //     return $record->name;
-    // }
-
-    // public static function getGlobalSearchResultDetails(User $record): array
-    // {
-    //     return [
-    //         'Email' => $record->email,
-    //         'Role'  => $record->roles->pluck('name')->join(', '),
-    //     ];
-    // }
-
-    // public static function getGloballySearchableAttributes(): array
-    // {
-    //     return ['name', 'email'];
-    // }
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
 }
