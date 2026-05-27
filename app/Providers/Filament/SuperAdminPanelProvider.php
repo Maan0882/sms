@@ -2,10 +2,17 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\SuperAdminDashboard;
+use App\Filament\Resources\AuditLogResource;
+use App\Filament\Resources\PermissionResource;
+use App\Filament\Resources\RoleResource;
+use App\Filament\Resources\UserResource;
+use App\Models\User;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -15,6 +22,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
@@ -24,21 +32,56 @@ class SuperAdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+
+             // ── Identity ───────────────────────────────────────────────
             ->id('superAdmin')
             ->path('superAdmin')
             ->login()
-            ->colors([
-                'primary' => Color::Amber,
+
+            // ── Branding ───────────────────────────────────────────────
+            ->colors(['primary' => Color::Amber])
+            ->brandName('IAPES · Super Admin')
+
+            // ── Resources ──────────────────────────────────────────────
+            ->resources([
+                UserResource::class,
+                RoleResource::class,
+                PermissionResource::class,
+                AuditLogResource::class,
             ])
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            
+            // ── Pages ──────────────────────────────────────────────────
             ->pages([
-                Pages\Dashboard::class,
+                SuperAdminDashboard::class,
             ])
+
+            // ── Sidebar navigation groups ──────────────────────────────
+            ->navigationGroups([
+                NavigationGroup::make('User Management')
+                    //->icon('heroicon-o-users')
+                    ->collapsed(false),
+
+                NavigationGroup::make('Access Control')
+                    //->icon('heroicon-o-shield-check')
+                    ->collapsed(false),
+
+                NavigationGroup::make('System')
+                    //->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed(true),
+            ])
+
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+            ])
+
+            // ── Middleware ─────────────────────────────────────────────
+            ->authMiddleware([
+                Authenticate::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -50,9 +93,11 @@ class SuperAdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
             ]);
+
+            // ── Gate: super_admin role only ────────────────────────────
+            // ->authorizationCallback(function (User $user): bool {
+            //     return $user->hasRole('super_admin');
+            // });
     }
 }
