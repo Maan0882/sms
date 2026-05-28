@@ -92,3 +92,4 @@ class SuperAdminPanelProvider extends PanelProvider
             });
     }
 }
+

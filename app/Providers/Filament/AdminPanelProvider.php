@@ -88,10 +88,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            // ── Gate: admin role only ──────────────────────────────────
-            ->authorizationCallback(function (User $user): bool {
-                return $user->hasRole('admin') || $user->hasRole('super_admin');
-            });
+            ]);
     }
 }
