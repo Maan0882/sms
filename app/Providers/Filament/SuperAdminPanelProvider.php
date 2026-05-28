@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\SuperAdminDashboard;
+use App\Filament\Pages\ManageRolesPermissions;
+use App\Filament\Pages\ManageBackups;
 use App\Filament\Resources\AuditLogResource;
 use App\Filament\Resources\PermissionResource;
 use App\Filament\Resources\RoleResource;
@@ -56,6 +58,8 @@ class SuperAdminPanelProvider extends PanelProvider
             // ── Pages ──────────────────────────────────────────────────
             ->pages([
                 SuperAdminDashboard::class,
+                ManageRolesPermissions::class,
+                ManageBackups::class,
             ])
 
             // ── Sidebar navigation groups ──────────────────────────────

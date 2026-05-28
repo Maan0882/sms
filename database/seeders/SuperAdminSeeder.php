@@ -60,6 +60,24 @@ class SuperAdminSeeder extends Seeder
             'settings.update',
             'audit_log.view',
             'audit_log.export',
+
+            // Subscriptions
+            'subscription.view',
+            'subscription.create',
+            'subscription.update',
+            'subscription.delete',
+            'subscription.restore',
+            'subscription.force_delete',
+
+            // Backups
+            'backup.view',
+            'backup.run',
+            'backup.download',
+            'backup.delete',
+
+            // Global role assignment
+            'role.assign_globally',
+            'permission.assign_globally',
         ];
 
         foreach ($permissions as $permission) {
