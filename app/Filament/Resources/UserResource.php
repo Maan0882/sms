@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
@@ -26,6 +27,7 @@ class UserResource extends Resource
     
     public static function form(Form $form): Form
     {
+        
         return $form
             ->schema([
                 Forms\Components\Section::make('Basic Information')
@@ -43,7 +45,6 @@ class UserResource extends Resource
                             ->email()
                             ->required()
                             ->unique(User::class, 'email', ignoreRecord: true)
-                            // ignoreRecord: true means ignore current user when editing
                             ->maxLength(255),
 
                         Forms\Components\FileUpload::make('avatar_url')
@@ -101,6 +102,7 @@ class UserResource extends Resource
                             ->label('Assign Role')
                             ->multiple()
                             ->relationship('roles', 'name')
+                            ->disabled(fn () => !Auth::user()?->hasRole('super_admin'))
                             ->preload()
                             ->searchable()
                             ->helperText('A user can have multiple roles'),

@@ -96,13 +96,34 @@ class User extends Authenticatable implements Auditable, FilamentUser
     // Filament panel access control
     public function canAccessPanel(Panel $panel): bool
     {
-        $id = $panel->getId();
-        if ($id === 'admin') {
-            return $this->hasRole('admin') || $this->hasRole('super_admin');
+        // Block deactivated accounts globally
+        if (! $this->is_active) {
+            return false;
         }
-        if ($id === 'superAdmin') {
-            return $this->hasRole('super_admin');
-        }
-        return false;
+ 
+        return match ($panel->getId()) {
+ 
+            // SuperAdmin panel: super_admin role only
+            'superAdmin' => $this->hasRole('super_admin'),
+ 
+            // Admin panel:
+            //   ✅ NOT super_admin
+            //   ✅ has at least one role assigned
+            //   ✅ is_active already checked above
+            'admin' => ! $this->hasRole('super_admin')
+                       && $this->roles->isNotEmpty(),
+ 
+            default => false,
+        };
+    }
+
+    public function creator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+ 
+    public function createdUsers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(User::class, 'created_by');
     }
 }

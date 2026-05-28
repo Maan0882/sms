@@ -13,6 +13,8 @@ class AdminDashboard extends Page
     protected static ?string $title           = 'Admin Dashboard';
     protected static ?int    $navigationSort  = -1;
 
+    protected static string $view = 'filament.admin.pages.admin-dashboard';
+    
     public function getWidgets(): array
     {
         return [

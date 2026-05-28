@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->authGuard('web')
             // ── Branding ───────────────────────────────────────────────
             ->colors(['primary' => Color::Red])
             ->brandName('IAPES · Admin')
@@ -64,16 +65,16 @@ class AdminPanelProvider extends PanelProvider
             // ── Navigation groups ──────────────────────────────────────
             ->navigationGroups([
                 NavigationGroup::make('People')
-                    ->icon('heroicon-o-users')
+                    //->icon('heroicon-o-users')
                     ->collapsed(false),
                 NavigationGroup::make('Programs')
-                    ->icon('heroicon-o-academic-cap')
+                    //->icon('heroicon-o-academic-cap')
                     ->collapsed(false),
                 NavigationGroup::make('Applications')
-                    ->icon('heroicon-o-document-text')
+                    //->icon('heroicon-o-document-text')
                     ->collapsed(false),
                 NavigationGroup::make('Reports')
-                    ->icon('heroicon-o-chart-bar')
+                    //->icon('heroicon-o-chart-bar')
                     ->collapsed(true),
             ])
             // ── Middleware ─────────────────────────────────────────────
