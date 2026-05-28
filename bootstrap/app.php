@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         App\Providers\AuthServiceProvider::class,
         App\Providers\Filament\SuperAdminPanelProvider::class,
+        App\Providers\Filament\AdminPanelProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         //
