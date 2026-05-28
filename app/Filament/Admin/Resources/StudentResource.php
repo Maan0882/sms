@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
 
 class StudentResource extends Resource
 {
@@ -181,8 +182,8 @@ class StudentResource extends Resource
         ];
     }
 
-    // protected function afterCreate(): void
-    // {
-    //     $this->record->assignRole('student');
-    // }
+    protected static function afterCreate(Model $record): void
+    {
+        $record->assignRole('student');
+    }
 }

@@ -33,17 +33,13 @@ class SuperAdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-
-             // ── Identity ───────────────────────────────────────────────
+            // ── Identity ───────────────────────────────────────────────
             ->id('superAdmin')
             ->path('superAdmin')
             ->login()
-
             // ── Branding ───────────────────────────────────────────────
             ->colors(['primary' => Color::Amber])
             ->brandName('IAPES · Super Admin')
-
             // ── Resources ──────────────────────────────────────────────
             ->resources([
                 UserResource::class,
@@ -51,42 +47,34 @@ class SuperAdminPanelProvider extends PanelProvider
                 PermissionResource::class,
                 AuditLogResource::class,
             ])
-
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            
             // ── Pages ──────────────────────────────────────────────────
             ->pages([
                 SuperAdminDashboard::class,
                 ManageRolesPermissions::class,
                 ManageBackups::class,
             ])
-
             // ── Sidebar navigation groups ──────────────────────────────
             ->navigationGroups([
                 NavigationGroup::make('User Management')
-                    //->icon('heroicon-o-users')
+                    // ->icon('heroicon-o-users')
                     ->collapsed(false),
-
                 NavigationGroup::make('Access Control')
-                    //->icon('heroicon-o-shield-check')
+                    // ->icon('heroicon-o-shield-check')
                     ->collapsed(false),
-
                 NavigationGroup::make('System')
-                    //->icon('heroicon-o-cog-6-tooth')
+                    // ->icon('heroicon-o-cog-6-tooth')
                     ->collapsed(true),
             ])
-
+            // ── Widgets ────────────────────────────────────────────────
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-
             // ── Middleware ─────────────────────────────────────────────
-            ->authMiddleware([
-                Authenticate::class,
-            ])
+            ->authMiddleware([Authenticate::class])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -97,11 +85,10 @@ class SuperAdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ]);
-
+            ])
             // ── Gate: super_admin role only ────────────────────────────
-            // ->authorizationCallback(function (User $user): bool {
-            //     return $user->hasRole('super_admin');
-            // });
+            ->authorizationCallback(function (User $user): bool {
+                return $user->hasRole('super_admin');
+            });
     }
 }

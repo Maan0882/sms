@@ -10,6 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
@@ -182,9 +183,8 @@ class MentorResource extends Resource
         ];
     }
 
-    // Auto assign mentor role on create
-    // protected function afterCreate(): void
-    // {
-    //     $this->record->assignRole('mentor');
-    // }
+    protected static function afterCreate(Model $record): void
+    {
+        $record->assignRole('mentor');
+    }
 }
