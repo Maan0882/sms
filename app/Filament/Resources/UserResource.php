@@ -102,7 +102,12 @@ class UserResource extends Resource
                             ->label('Assign Role')
                             ->multiple()
                             ->relationship('roles', 'name')
-                            ->disabled(fn () => !Auth::user()?->hasRole('super_admin'))
+                            ->disabled(function () {
+                                /** @var \App\Models\User $user */
+                                $user = Auth::user();
+
+                                return ! ($user?->isSuperAdmin());
+                            })
                             ->preload()
                             ->searchable()
                             ->helperText('A user can have multiple roles'),

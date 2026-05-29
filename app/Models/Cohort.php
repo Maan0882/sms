@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Cohort extends Model
+class Cohort extends Model implements Auditable
 {
     use SoftDeletes, AuditableTrait;
 
