@@ -160,12 +160,13 @@ class StudentResource extends Resource
  
                         Forms\Components\Select::make('country')
                             ->searchable()
+                            ->optionsLimit(300)
                             ->options(fn () => cache()->remember('countries_list', now()->addDay(), function () {
                                 return \Illuminate\Support\Facades\Http::withoutVerifying()
-                                    ->get('https://restcountries.com/v3.1/all')
+                                    ->get('https://restcountries.com/v3.1/all?fields=name,cca2')
                                     ->collect()
-                                    ->mapWithKeys(fn ($c) => [($c['cca2'] ?? '') => ($c['name']['common'] ?? '')])
-                                    ->filter(fn ($name, $code) => !empty($name) && !empty($code))
+                                    ->mapWithKeys(fn ($c) => [($c['name']['common'] ?? '') => ($c['name']['common'] ?? '')])
+                                    ->filter(fn ($name, $code) => !empty($name))
                                     ->sort()
                                     ->toArray();
                             })),
