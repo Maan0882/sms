@@ -160,13 +160,12 @@ class StudentResource extends Resource
  
                         Forms\Components\Select::make('country')
                             ->searchable()
-                            ->optionsLimit(300)
                             ->options(fn () => cache()->remember('countries_list', now()->addDay(), function () {
                                 return \Illuminate\Support\Facades\Http::withoutVerifying()
-                                    ->get('https://restcountries.com/v3.1/all?fields=name,cca2')
+                                    ->get('https://restcountries.com/v3.1/all')
                                     ->collect()
-                                    ->mapWithKeys(fn ($c) => [($c['name']['common'] ?? '') => ($c['name']['common'] ?? '')])
-                                    ->filter(fn ($name, $code) => !empty($name))
+                                    ->mapWithKeys(fn ($c) => [($c['cca2'] ?? '') => ($c['name']['common'] ?? '')])
+                                    ->filter(fn ($name, $code) => !empty($name) && !empty($code))
                                     ->sort()
                                     ->toArray();
                             })),
@@ -237,6 +236,7 @@ class StudentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('enrollment_status')
                     ->label('Status')
                     ->options([
@@ -305,7 +305,11 @@ class StudentResource extends Resource
                         $record->update(['enrollment_status' => $data['enrollment_status']]);
                     }),
  
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\DeleteAction::make()->label('Move to Trash'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label('Delete Forever')
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -340,7 +344,9 @@ class StudentResource extends Resource
                         ->action(fn ($records, array $data) => $records->each->update(['enrollment_status' => $data['enrollment_status']]))
                         ->requiresConfirmation(),
  
+                    Tables\Actions\RestoreBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -396,7 +402,13 @@ class StudentResource extends Resource
                     ->columns(2),
             ]);
     }
- 
+    
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([SoftDeletingScope::class]);
+    }
+    
     public static function getRelationManagers(): array
     {
         return [
