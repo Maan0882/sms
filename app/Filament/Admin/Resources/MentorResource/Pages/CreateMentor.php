@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateMentor extends CreateRecord
 {
     protected static string $resource = MentorResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

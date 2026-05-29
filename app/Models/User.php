@@ -31,13 +31,13 @@ class User extends Authenticatable implements Auditable, FilamentUser
         'avatar_url',
     ];
 
-    // What fields to track changes on
-    protected array $auditInclude = [
-        'name',
-        'email',
-        'is_active',
-        'avatar_url',
-    ];
+    // // What fields to track changes on
+    // protected array $auditInclude = [
+    //     'name',
+    //     'email',
+    //     'is_active',
+    //     'avatar_url',
+    // ];
 
     // What fields to never track (sensitive)
     protected array $auditExclude = [
@@ -113,6 +113,9 @@ class User extends Authenticatable implements Auditable, FilamentUser
             'admin' => ! $this->hasRole('super_admin')
                        && $this->roles->isNotEmpty(),
  
+            // Mentor Panel: mentor role only
+            'mentor' => $this->hasRole('mentor'),
+
             default => false,
         };
     }

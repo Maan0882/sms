@@ -40,15 +40,16 @@ class AuditLogResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User')
                     ->searchable()
+                    ->description(fn (Audit $record) => $record->user?->email ?? '—')
                     ->sortable()
                     ->default('System')
                     ->weight('semibold'),
 
-                Tables\Columns\TextColumn::make('user.email')
-                    ->label('Email')
-                    ->searchable()
-                    ->default('—')
-                    ->color('gray'),
+                // Tables\Columns\TextColumn::make('user.email')
+                //     ->label('Email')
+                //     ->searchable()
+                //     ->default('—')
+                //     ->color('gray'),
 
                 // What they did
                 Tables\Columns\TextColumn::make('event')
@@ -76,11 +77,20 @@ class AuditLogResource extends Resource
                 Tables\Columns\TextColumn::make('auditable_id')
                     ->label('Record ID')
                     ->fontFamily('mono')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->color('gray'),
+
+                // Record Name
+                Tables\Columns\TextColumn::make('auditable_name')
+                    ->label('Name')
+                    ->getStateUsing(fn (Audit $record) => $record->auditable?->name ?? '—')
+                    ->description(fn (Audit $record) => $record->auditable?->email ?? '—')
                     ->color('gray'),
 
                 // What changed
                 Tables\Columns\TextColumn::make('change_summary')
                     ->label('Changes')
+                    ->getStateUsing(fn (Audit $record) => $record->change_summary)
                     ->wrap()
                     ->limit(60)
                     ->tooltip(fn (Audit $record) => $record->change_summary)

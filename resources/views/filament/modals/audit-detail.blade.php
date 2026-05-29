@@ -32,6 +32,7 @@
             <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Model</p>
             <p class="text-sm font-semibold mt-1">{{ class_basename($audit->auditable_type) }}</p>
             <p class="text-xs text-gray-400">ID: {{ $audit->auditable_id }}</p>
+            <p class="text-xs text-gray-500 mt-1">Name: <span class="text-gray-700 font-medium">{{ $audit->auditable?->name ?? '—' }}</span></p>
         </div>
     </div>
 
@@ -54,14 +55,23 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @foreach($audit->new_values as $field => $newValue)
+                @php
+                    $values = $audit->event === 'deleted' ? $audit->old_values : $audit->new_values;
+                    if (!is_array($values)) $values = [];
+                @endphp
+                @foreach($values as $field => $value)
+                @php
+                    $oldVal = $audit->old_values[$field] ?? '—';
+                    $newVal = $audit->event === 'deleted' ? 'deleted' : $value;
+                    if ($audit->event === 'created') $oldVal = 'empty';
+                @endphp
                 <tr>
                     <td class="px-3 py-2 font-mono text-xs text-gray-600">{{ $field }}</td>
                     <td class="px-3 py-2 text-red-500 text-xs">
-                        {{ $audit->old_values[$field] ?? '—' }}
+                        {{ is_array($oldVal) ? json_encode($oldVal) : $oldVal }}
                     </td>
                     <td class="px-3 py-2 text-green-600 text-xs font-medium">
-                        {{ $newValue }}
+                        {{ is_array($newVal) ? json_encode($newVal) : $newVal }}
                     </td>
                 </tr>
                 @endforeach
