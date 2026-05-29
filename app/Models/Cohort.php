@@ -12,6 +12,7 @@ class Cohort extends Model implements Auditable
     use SoftDeletes, AuditableTrait;
 
     protected $fillable = [
+        'institution_id',
         'program_id', 'name', 'code',
         'max_students', 'start_date', 'end_date', 'is_active',
     ];
@@ -36,5 +37,10 @@ class Cohort extends Model implements Auditable
     public function evaluations()
     {
         return $this->hasMany(Evaluation::class);
+    }
+
+    public function institution(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 }

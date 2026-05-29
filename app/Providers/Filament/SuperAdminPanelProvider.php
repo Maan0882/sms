@@ -49,6 +49,7 @@ class SuperAdminPanelProvider extends PanelProvider
                 RoleResource::class,
                 PermissionResource::class,
                 AuditLogResource::class,
+                \App\Filament\Resources\InstitutionResource::class,
             ])
 
             // ── Sidebar navigation groups ──────────────────────────────

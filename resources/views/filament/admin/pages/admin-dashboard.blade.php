@@ -2,6 +2,7 @@
 @php
     $d       = $this->getDashboardData();
     $user    = auth()->user();
+    $tenant  = Filament\Facades\Filament::getTenant();
     $hour    = now()->hour;
     $greet   = $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening');
     $first   = explode(' ', $user->name)[0];
@@ -103,7 +104,7 @@
     <div class="sp-12 card alert">
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
         <span class="alert-txt"><strong>{{ $d['pendingApps'] }} application{{ $d['pendingApps'] > 1 ? 's' : '' }}</strong> awaiting your review.</span>
-        <a href="{{ route('filament.admin.resources.applications.index') }}" class="alert-lnk">Review now →</a>
+        <a href="{{ route('filament.admin.resources.applications.index', ['tenant' => $tenant]) }}" class="alert-lnk">Review now →</a>
     </div>
     @endif
 
@@ -242,33 +243,33 @@
     <div class="sec-div">Quick Actions</div>
     <div class="sp-12 card" style="padding:20px 24px;">
         <div class="act-grid">
-            <a href="{{ route('filament.admin.resources.students.create') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.students.create', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(56,189,248,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#38bdf8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 </div>Enroll Student
             </a>
-            <a href="{{ route('filament.admin.resources.mentors.create') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.mentors.create', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(16,185,129,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#10b981" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 </div>Add Mentor
             </a>
-            <a href="{{ route('filament.admin.resources.applications.index') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.applications.index', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(245,158,11,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f59e0b" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>Applications
                 @if($d['pendingApps'] > 0)<span class="badge-cnt">{{ $d['pendingApps'] }}</span>@endif
             </a>
-            <a href="{{ route('filament.admin.resources.programs.index') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.programs.index', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(249,115,22,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f97316" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                 </div>Programs
             </a>
-            <a href="{{ route('filament.admin.resources.mentors.index') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.mentors.index', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(99,102,241,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#818cf8" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493"/></svg>
                 </div>All Mentors
             </a>
-            <a href="{{ route('filament.admin.resources.students.index') }}" class="act-btn">
+            <a href="{{ route('filament.admin.resources.students.index', ['tenant' => $tenant]) }}" class="act-btn">
                 <div class="act-ic" style="background:rgba(244,63,94,.13);">
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#f43f5e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/></svg>
                 </div>All Students

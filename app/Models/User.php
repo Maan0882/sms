@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Spatie\Permission\Traits\HasRoles;
@@ -18,7 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 // #[Fillable(['name', 'email', 'password'])]
 // #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements Auditable, FilamentUser
+class User extends Authenticatable implements Auditable, FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles, SoftDeletes, AuditableTrait;
@@ -29,6 +32,7 @@ class User extends Authenticatable implements Auditable, FilamentUser
         'password',
         'is_active',
         'avatar_url',
+        'institution_id',
     ];
 
     // // What fields to track changes on
@@ -128,5 +132,31 @@ class User extends Authenticatable implements Auditable, FilamentUser
     public function createdUsers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(User::class, 'created_by');
+    }
+
+    public function institution(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
+    }
+
+    public function getTenants(Panel $panel): array|Collection
+    {
+        // Super Admins don't have a specific institution to manage in the admin panel by default,
+        // or we could let them manage all. For now, if they log into the Admin panel,
+        // we can return all institutions so they can switch between them, or just their assigned one.
+        if ($this->hasRole('super_admin')) {
+            return Institution::all();
+        }
+        
+        return $this->institution ? collect([$this->institution]) : collect([]);
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+        
+        return $this->institution_id === $tenant->id;
     }
 }

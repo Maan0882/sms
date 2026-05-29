@@ -12,6 +12,7 @@ class Program extends Model implements Auditable
     use SoftDeletes, AuditableTrait;
 
     protected $fillable = [
+        'institution_id',
         'name', 'code', 'description',
         'duration_months', 'max_students',
         'is_active', 'start_date', 'end_date',
@@ -51,5 +52,10 @@ class Program extends Model implements Auditable
     public function enrolledCount(): int
     {
         return $this->applications()->where('status', 'approved')->count();
+    }
+
+    public function institution(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 }

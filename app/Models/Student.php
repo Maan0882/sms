@@ -61,10 +61,10 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
  
-    // public function institution(): BelongsTo
-    // {
-    //     return $this->belongsTo(Institution::class);
-    // }
+    public function institution(): BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
+    }
  
     public function program(): BelongsTo
     {

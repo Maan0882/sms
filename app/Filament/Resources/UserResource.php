@@ -61,6 +61,14 @@ class UserResource extends Resource
                             ->label('Active Account')
                             ->default(true)
                             ->helperText('Inactive users cannot log in'),
+                            
+                        Forms\Components\Select::make('institution_id')
+                            ->label('Institution')
+                            ->relationship('institution', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->helperText('Required for Admin roles to manage their data')
+                            ->columnSpanFull(),
 
                     ])
                     ->columns(2),
@@ -162,6 +170,13 @@ class UserResource extends Resource
                     ->formatStateUsing(
                         fn ($state) => ucfirst(str_replace('_', ' ', $state))
                     ),
+
+                Tables\Columns\TextColumn::make('institution.name')
+                    ->label('Institution')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Unassigned')
+                    ->toggleable(),
 
                 // Toggle active/inactive inline in the table
                 Tables\Columns\ToggleColumn::make('is_active')

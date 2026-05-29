@@ -38,6 +38,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->authGuard('web')
+            ->profile(\App\Filament\Pages\EditProfile::class)
+            ->tenant(\App\Models\Institution::class, slugAttribute: 'slug')
             // ── Branding ───────────────────────────────────────────────
             ->colors(['primary' => Color::Red])
             ->brandName('IAPES · Admin')

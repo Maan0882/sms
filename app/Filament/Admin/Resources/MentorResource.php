@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\MentorResource\Pages;
 use App\Models\User;
+use App\Models\Mentor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;

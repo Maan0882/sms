@@ -12,6 +12,7 @@ class Application extends Model implements Auditable
     use SoftDeletes, AuditableTrait;
 
     protected $fillable = [
+        'institution_id',
         'user_id', 'program_id', 'cohort_id',
         'status', 'remarks', 'documents',
         'submitted_at', 'reviewed_at', 'reviewed_by',
@@ -47,4 +48,9 @@ class Application extends Model implements Auditable
     public function isPending(): bool   { return $this->status === 'pending'; }
     public function isApproved(): bool  { return $this->status === 'approved'; }
     public function isRejected(): bool  { return $this->status === 'rejected'; }
+
+    public function institution(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
+    }
 }

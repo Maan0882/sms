@@ -12,6 +12,7 @@ class Evaluation extends Model implements Auditable
     use SoftDeletes, AuditableTrait;
 
     protected $fillable = [
+        'institution_id',
         'student_id', 'mentor_id', 'program_id', 'cohort_id',
         'title', 'score', 'max_score', 'grade',
         'feedback', 'status', 'evaluated_at',
@@ -48,5 +49,10 @@ class Evaluation extends Model implements Auditable
     {
         if (! $this->max_score) return 0;
         return round(($this->score / $this->max_score) * 100, 2);
+    }
+
+    public function institution(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Institution::class);
     }
 }
