@@ -139,6 +139,11 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
         return $this->belongsTo(Institution::class);
     }
 
+    public function mentor(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Mentor::class, 'user_id', 'id');
+    }
+
     public function getTenants(Panel $panel): array|Collection
     {
         // Super Admins don't have a specific institution to manage in the admin panel by default,

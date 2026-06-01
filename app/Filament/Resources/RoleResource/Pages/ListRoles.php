@@ -13,7 +13,9 @@ class ListRoles extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add New Role') // If you explicitly set the label
+                ->icon('heroicon-o-plus-circle'), // Adds the Heroicon 
         ];
     }
 }

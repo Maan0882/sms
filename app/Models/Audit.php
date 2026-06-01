@@ -57,6 +57,15 @@ class Audit extends AuditModel
             $changes[] = "{$field}: {$oldValue} → {$newValue}";
         }
 
-        return implode(', ', $changes) ?: 'No changes recorded';
+        $summary = implode(', ', $changes);
+
+        if (empty($summary)) {
+            if ($this->event === 'updated' && class_basename($this->auditable_type) === 'User') {
+                return 'Password changed';
+            }
+            return 'No changes recorded';
+        }
+
+        return $summary;
     }
 }

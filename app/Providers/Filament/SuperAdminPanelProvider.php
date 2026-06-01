@@ -54,6 +54,8 @@ class SuperAdminPanelProvider extends PanelProvider
 
             // ── Sidebar navigation groups ──────────────────────────────
             ->navigationGroups([
+                NavigationGroup::make('Institute Management')
+                    ->collapsed(false), // You can set this to false if you want it expanded by default
                 NavigationGroup::make('User Management')
                     ->collapsed(false),
                 NavigationGroup::make('Access Control')

@@ -18,7 +18,9 @@ class ListInstitutions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Create New Institution') // If you explicitly set the label
+                ->icon('heroicon-o-building-office-2'), // Adds the Heroicon 
         ];
     }
 }

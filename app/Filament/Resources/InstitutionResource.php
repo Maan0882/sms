@@ -18,8 +18,9 @@ class InstitutionResource extends Resource
     protected static ?string $model = Institution::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
-    
-    protected static ?string $navigationGroup = 'System';
+    protected static ?int    $navigationSort  = 1;
+    protected static ?string $navigationGroup = 'Institute Management';
+
 
     public static function form(Form $form): Form
     {
@@ -43,7 +44,7 @@ class InstitutionResource extends Resource
                             ->maxLength(255),
                         
                         Forms\Components\TextInput::make('phone')
-                            ->placeholder('phone number')
+                            ->placeholder('Enter Phone Number')
                             ->tel()
                             ->maxLength(255),
                             
@@ -77,11 +78,14 @@ class InstitutionResource extends Resource
                     ->circular()
                     ->defaultImageUrl('https://ui-avatars.com/api/?name=Institution&color=7F9CF5&background=EBF4FF'),
                 Tables\Columns\TextColumn::make('name')
+                    ->placeholder('Institution Name')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('contact_email')
+                    ->placeholder("Institution's Email")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
+                    ->placeholder('Phone Number')
                     ->searchable(),
                 Tables\Columns\ToggleColumn::make('is_active'),
                 Tables\Columns\TextColumn::make('created_at')

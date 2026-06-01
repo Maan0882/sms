@@ -13,7 +13,9 @@ class ListMentors extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add New Mentor') // If you explicitly set the label
+                ->icon('heroicon-o-user-plus'), // Adds the Heroicon ➕👤,
         ];
     }
 }

@@ -36,7 +36,6 @@ class AdminPanelProvider extends PanelProvider
             // ── Identity ───────────────────────────────────────────────
             ->id('admin')
             ->path('admin')
-            ->login()
             ->authGuard('web')
             ->profile(\App\Filament\Pages\EditProfile::class)
             ->tenant(\App\Models\Institution::class, slugAttribute: 'slug')

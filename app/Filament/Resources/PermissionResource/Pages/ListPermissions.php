@@ -13,7 +13,9 @@ class ListPermissions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Add New Permission') // If you explicitly set the label
+                ->icon('heroicon-o-key'), // Adds the Heroicon ➕👤
         ];
     }
 }

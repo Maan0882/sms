@@ -26,6 +26,8 @@ class StudentResource extends Resource
     protected static ?int    $navigationSort  = 2;
     protected static ?string $slug            = 'students';
     protected static ?string $recordTitleAttribute = 'full_name';
+    protected static ?string $modelLabel      = 'Student';
+    protected static ?string $pluralModelLabel = 'Students';
     // ── FORM ──────────────────────────────────────────────────────────
 
     public static function form(Form $form): Form
@@ -109,10 +111,10 @@ class StudentResource extends Resource
                             ->label('Assigned Mentor')
                             ->relationship(
                                 name: 'mentor',
-                                titleAttribute: 'first_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->active()->whereNotNull('first_name') // Prevents null rows from breaking things
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->active()->role('mentor')
                             )
-                            ->searchable(['first_name', 'last_name'])
+                            ->searchable(['name'])
                             ->preload()
                             ->helperText('Only active mentors are shown.'),
  
@@ -160,9 +162,10 @@ class StudentResource extends Resource
  
                         Forms\Components\Select::make('country')
                             ->searchable()
+                            ->optionsLimit(300)
                             ->options(fn () => cache()->remember('countries_list', now()->addDay(), function () {
                                 return \Illuminate\Support\Facades\Http::withoutVerifying()
-                                    ->get('https://restcountries.com/v3.1/all')
+                                    ->get('https://restcountries.com/v3.1/all?fields=name,cca2')
                                     ->collect()
                                     ->mapWithKeys(fn ($c) => [($c['cca2'] ?? '') => ($c['name']['common'] ?? '')])
                                     ->filter(fn ($name, $code) => !empty($name) && !empty($code))
@@ -186,7 +189,7 @@ class StudentResource extends Resource
                     ->circular()
                     ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) . '&color=F59E0B&background=FEF3C7'),
  
-                Tables\Columns\TextColumn::make('student_id')
+                Tables\Columns\TextColumn::make('id')
                     ->label('ID')
                     ->searchable()
                     ->badge()
@@ -210,7 +213,7 @@ class StudentResource extends Resource
                     ->searchable()
                     ->toggleable(),
  
-                Tables\Columns\TextColumn::make('mentor.first_name')
+                Tables\Columns\TextColumn::make('mentor.name')
                     ->label('Mentor')
                     ->searchable()
                     ->toggleable(),
@@ -258,7 +261,7 @@ class StudentResource extends Resource
                     ->preload(),
  
                 Tables\Filters\SelectFilter::make('mentor')
-                    ->relationship('mentor', 'first_name')
+                    ->relationship('mentor', 'name')
                     ->searchable()
                     ->preload(),
  
@@ -277,8 +280,8 @@ class StudentResource extends Resource
                     ->form([
                         Forms\Components\Select::make('mentor_id')
                             ->label('New Mentor')
-                            ->relationship('mentor', 'first_name', fn (Builder $query) =>
-                                $query->where('status', 'active'))
+                            ->relationship('mentor', 'name', fn (Builder $query) =>
+                                $query->where('is_active', 1))
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -319,7 +322,7 @@ class StudentResource extends Resource
                         ->form([
                             Forms\Components\Select::make('mentor_id')
                                 ->label('Mentor')
-                                ->relationship('mentor', 'first_name', fn (Builder $query) => $query->where('status', 'active'))
+                                ->relationship('mentor', 'name', fn (Builder $query) => $query->where('status', 'active'))
                                 ->searchable()
                                 ->preload()
                                 ->required(),
@@ -394,7 +397,7 @@ class StudentResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('program.name'),
                         Infolists\Components\TextEntry::make('cohort.name'),
-                        Infolists\Components\TextEntry::make('mentor.full_name')
+                        Infolists\Components\TextEntry::make('mentor.name')
                             ->label('Assigned Mentor'),
                         Infolists\Components\TextEntry::make('enrollment_date')
                             ->date('d M Y'),
@@ -425,14 +428,15 @@ class StudentResource extends Resource
         ];
     }
 
-    protected static function afterCreate(Model $record): void
-    {
-        $record->assignRole('student');
-    }
+    // protected static function afterCreate(Model $record): void
+    // {
+    //     $record->assignRole('student');
+    // }
+     // Removed invalid afterCreate hook
 
-     public static function getNavigationBadge(): ?string
+    public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('enrollment_status', 'enrolled')->count();
+        return static::getEloquentQuery()->where('enrollment_status', 'enrolled')->count();
     }
  
     public static function getNavigationBadgeColor(): ?string

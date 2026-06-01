@@ -24,6 +24,8 @@ class MentorResource extends Resource
     protected static ?string $navigationLabel = 'Mentors';
     protected static ?int    $navigationSort  = 1;
     protected static ?string $slug            = 'mentors';
+    protected static ?string $modelLabel      = 'Mentor';
+    protected static ?string $pluralModelLabel = 'Mentors';
     
     // ── FORM ──────────────────────────────────────────────────────────
 
@@ -184,8 +186,19 @@ class MentorResource extends Resource
         ];
     }
 
-    protected static function afterCreate(Model $record): void
+    // protected static function afterCreate(Model $record): void
+    // {
+    //     $record->assignRole('mentor');
+    // }
+    // Removed invalid afterCreate hook
+
+    public static function getNavigationBadge(): ?string
     {
-        $record->assignRole('mentor');
+        return static::getEloquentQuery()->where('is_active', true)->count();
+    }
+ 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'success';
     }
 }

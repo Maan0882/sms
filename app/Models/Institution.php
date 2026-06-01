@@ -29,4 +29,34 @@ class Institution extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function programs(): HasMany
+    {
+        return $this->hasMany(Program::class);
+    }
+
+    public function mentors(): HasMany
+    {
+        return $this->hasMany(Mentor::class);
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    public function cohorts(): HasMany
+    {
+        return $this->hasMany(Cohort::class);
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function evaluations(): HasMany
+    {
+        return $this->hasMany(Evaluation::class);
+    }
 }

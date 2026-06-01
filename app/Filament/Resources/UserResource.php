@@ -22,7 +22,7 @@ class UserResource extends Resource
     protected static ?string $navigationIcon  = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'User Management'; // matches your panel group
     protected static ?string $navigationLabel = 'All Users';
-    protected static ?int    $navigationSort  = 1;
+    protected static ?int    $navigationSort  = 2;
     protected static ?string $recordTitleAttribute = 'name';
     
     public static function form(Form $form): Form
@@ -67,7 +67,15 @@ class UserResource extends Resource
                             ->relationship('institution', 'name')
                             ->searchable()
                             ->preload()
-                            ->helperText('Required for Admin roles to manage their data')
+                            ->required(function (\Filament\Forms\Get $get) {
+                                $roleIds = $get('roles');
+                                if (!is_array($roleIds) || empty($roleIds)) {
+                                    return false;
+                                }
+                                $names = \Spatie\Permission\Models\Role::whereIn('id', $roleIds)->pluck('name')->toArray();
+                                return count(array_intersect(['admin', 'mentor', 'student'], $names)) > 0;
+                            })
+                            ->helperText('Required for Admin, Mentor, and Student roles')
                             ->columnSpanFull(),
 
                     ])
@@ -108,8 +116,10 @@ class UserResource extends Resource
 
                         Forms\Components\Select::make('roles')
                             ->label('Assign Role')
+                            ->required()
                             ->multiple()
                             ->relationship('roles', 'name')
+                            ->live()
                             ->disabled(function () {
                                 /** @var \App\Models\User $user */
                                 $user = Auth::user();

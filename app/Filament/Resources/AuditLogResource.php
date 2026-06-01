@@ -83,7 +83,7 @@ class AuditLogResource extends Resource
                 // Record Name
                 Tables\Columns\TextColumn::make('auditable_name')
                     ->label('Name')
-                    ->getStateUsing(fn (Audit $record) => $record->auditable?->name ?? '—')
+                    ->getStateUsing(fn (Audit $record) => $record->auditable?->name ?? $record->auditable?->first_name.' '.$record->auditable?->last_name ?? '—')
                     ->description(fn (Audit $record) => $record->auditable?->email ?? '—')
                     ->color('gray'),
 

@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Student extends Model
+class Student extends Model implements Auditable
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, AuditableTrait;
  
     protected $fillable = [
         'user_id',
@@ -78,7 +80,7 @@ class Student extends Model
  
     public function mentor(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Mentor::class, 'mentor_id');
+        return $this->belongsTo(User::class, 'mentor_id');
     }
  
     public function evaluations(): HasMany
