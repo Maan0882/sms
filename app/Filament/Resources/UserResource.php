@@ -118,7 +118,7 @@ class UserResource extends Resource
                             ->label('Assign Role')
                             ->required()
                             ->multiple()
-                            ->relationship('roles', 'name')
+                            ->relationship('roles', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('name', '!=', 'super_admin'))
                             ->live()
                             ->disabled(function () {
                                 /** @var \App\Models\User $user */

@@ -37,7 +37,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->authGuard('web')
-            ->profile(\App\Filament\Pages\EditProfile::class)
+            //->profile(\App\Filament\Pages\EditProfile::class)
             ->tenant(\App\Models\Institution::class, slugAttribute: 'slug')
             // ── Branding ───────────────────────────────────────────────
             ->colors(['primary' => Color::Red])

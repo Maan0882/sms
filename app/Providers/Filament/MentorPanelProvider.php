@@ -28,7 +28,7 @@ class MentorPanelProvider extends PanelProvider
             ->login()
             ->authGuard('web')
             ->brandName('IAPES · Mentor')
-            ->profile(\App\Filament\Pages\EditProfile::class)
+            //->profile(\App\Filament\Pages\EditProfile::class)
             ->colors([
                 'primary' => Color::Teal,
             ])

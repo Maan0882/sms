@@ -62,41 +62,45 @@ class PermissionResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $columns = [
+            Tables\Columns\TextColumn::make('name')
+                ->label('Permission')
+                ->searchable()
+                ->sortable()
+                ->fontFamily('mono')
+                ->badge()
+                ->color('gray')
+                ->formatStateUsing(function (string $state) {
+                    $parts = explode('.', $state);
+                    if (count($parts) === 2) {
+                        $resource = str_replace('_', ' ', $parts[0]);
+                        $action = str_replace('_', ' ', $parts[1]);
+                        return "can {$action} {$resource}";
+                    }
+                    return $state;
+                }),
+        ];
+
+        try {
+            $roles = \Spatie\Permission\Models\Role::all();
+            foreach ($roles as $role) {
+                $columns[] = Tables\Columns\IconColumn::make('role_' . $role->id)
+                    ->label(ucfirst(str_replace('_', ' ', $role->name)))
+                    ->boolean()
+                    ->getStateUsing(fn (Permission $record): bool => $record->roles->contains('id', $role->id));
+            }
+        } catch (\Exception $e) {
+            // Ignore in case DB is not set up
+        }
+
+        $columns[] = Tables\Columns\TextColumn::make('created_at')
+            ->label('Created')
+            ->dateTime('d M Y')
+            ->sortable()
+            ->toggleable(isToggledHiddenByDefault: true);
+
         return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Permission')
-                    ->searchable()
-                    ->sortable()
-                    ->fontFamily('mono')
-                    ->badge()
-                    ->color('gray'),
-
-                Tables\Columns\TextColumn::make('guard_name')
-                    ->label('Guard')
-                    ->badge()
-                    ->color('info'),
-
-                Tables\Columns\TextColumn::make('roles.name')
-                    ->label('Assigned To')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'super_admin' => 'warning',
-                        'admin'       => 'danger',
-                        'mentor'      => 'success',
-                        'student'     => 'info',
-                        default       => 'gray',
-                    })
-                    ->formatStateUsing(
-                        fn ($state) => ucfirst(str_replace('_', ' ', $state))
-                    ),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
-                    ->dateTime('d M Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ->columns($columns)
             ->filters([
                 Tables\Filters\SelectFilter::make('roles')
                     ->label('Filter by Role')
