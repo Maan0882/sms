@@ -32,20 +32,7 @@ class LoginController extends Controller
             }
 
             $request->session()->regenerate();
-
-            if ($user->isSuperAdmin()) 
-            {
-                return redirect()->intended('/superAdmin');
-            }
-             elseif ($user->isMentor()) 
-            {
-                return redirect()->intended('/mentor');
-            }
-            elseif ($user->isAdmin())
-            {
-                return redirect()->intended('/admin');
-            }
-            return redirect()->intended('/student');
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([

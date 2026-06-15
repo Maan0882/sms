@@ -20,6 +20,11 @@ class ManageRolesPermissions extends Page
     protected static ?int    $navigationSort  = 3;
     protected static string  $view            = 'filament.pages.manage-roles-permissions';
 
+    public static function canAccess(): bool
+    {
+        // Only SuperAdmins can access this page.
+        return auth()->user()->hasRole('super_admin');
+    }
     // ── Form state ─────────────────────────────────────────────────────
 
     public ?int    $selectedUserId       = null;

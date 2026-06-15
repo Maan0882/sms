@@ -14,6 +14,12 @@ class AuditLogWidget extends BaseWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        // Only Superadmins will ever see this widget on the unified dashboard
+        return auth()->user()->hasRole('super_admin');
+    }
+
     public function table(Table $table): Table
     {
         return $table

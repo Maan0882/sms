@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Spatie\Permission\Traits\HasRoles;
-
+// use Laravel\Sanctum\HasApiTokens;
 
 // #[Fillable(['name', 'email', 'password'])]
 // #[Hidden(['password', 'remember_token'])]
@@ -97,7 +97,6 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
         return $query->role($role); // provided by HasRoles
     }
 
-    // Filament panel access control
     public function canAccessPanel(Panel $panel): bool
     {
         // Block deactivated accounts globally
@@ -106,20 +105,7 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
         }
  
         return match ($panel->getId()) {
- 
-            // SuperAdmin panel: super_admin role only
-            'superAdmin' => $this->hasRole('super_admin'),
- 
-            // Admin panel:
-            //   ✅ NOT super_admin
-            //   ✅ has at least one role assigned
-            //   ✅ is_active already checked above
-            'admin' => ! $this->hasRole('super_admin')
-                       && $this->roles->isNotEmpty(),
- 
-            // Mentor Panel: mentor role only
-            'mentor' => $this->hasRole('mentor'),
-
+            'app' => true, // All active users can access the main app panel. Roles/Policies handle specific resource access.
             default => false,
         };
     }

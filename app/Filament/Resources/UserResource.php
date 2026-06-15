@@ -25,6 +25,11 @@ class UserResource extends Resource
     protected static ?int    $navigationSort  = 2;
     protected static ?string $recordTitleAttribute = 'name';
     
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
+    
     public static function form(Form $form): Form
     {
         
@@ -328,5 +333,16 @@ class UserResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+// To Display total number of Users
+     public static function getNavigationBadge(): ?string
+    {
+        return static::getEloquentQuery()->where('is_active', true)->count();
+    }
+ 
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
     }
 }

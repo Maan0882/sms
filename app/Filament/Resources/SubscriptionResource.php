@@ -20,6 +20,11 @@ class SubscriptionResource extends Resource
     protected static ?string $navigationLabel = 'Subscriptions';
     protected static ?int    $navigationSort  = 2;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
+    
     // ── FORM ──────────────────────────────────────────────────────────
 
     public static function form(Form $form): Form

@@ -10,7 +10,13 @@ class RoleDistributionWidget extends ChartWidget
     protected static ?int    $sort    = 2;
     protected static ?string $heading = 'Users by Role';
 
-    protected int | string | array $columnSpan = 2;
+    protected int | string | array $columnSpan = 1;
+
+    public static function canView(): bool
+    {
+        // Only Superadmins will ever see this widget on the unified dashboard
+        return auth()->user()->hasRole('super_admin');
+    }
 
     protected function getData(): array
     {

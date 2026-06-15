@@ -18,6 +18,11 @@ class ManageBackups extends Page
     protected static ?int    $navigationSort  = 3;
     protected static string  $view            = 'filament.pages.manage-backups';
 
+    public static function canAccess(): bool
+    {
+        // Only SuperAdmins can access this page.
+        return auth()->user()->hasRole('super_admin');
+    }
     // ── Livewire state ─────────────────────────────────────────────────
 
     public bool   $isRunning = false;

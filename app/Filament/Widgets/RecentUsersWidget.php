@@ -13,7 +13,13 @@ class RecentUsersWidget extends BaseWidget
     protected static ?int    $sort    = 3;
     protected static ?string $heading = 'Recently Joined Users';
 
-    protected int | string | array $columnSpan = 2;
+    protected int | string | array $columnSpan = 1;
+
+    public static function canView(): bool
+    {
+        // Only Superadmins will ever see this widget on the unified dashboard
+        return auth()->user()->hasRole('super_admin');
+    }
 
     public function table(Table $table): Table
     {

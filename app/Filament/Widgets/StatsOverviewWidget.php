@@ -14,6 +14,12 @@ class StatsOverviewWidget extends BaseWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    public static function canView(): bool
+    {
+        // Only Superadmins will ever see this widget on the unified dashboard
+        return auth()->user()->hasRole('super_admin');
+    }
+
     protected function getStats(): array
     {
         $last7Days = collect(range(6, 0))->map(function ($daysAgo) {

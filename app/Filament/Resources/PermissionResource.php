@@ -17,6 +17,11 @@ class PermissionResource extends Resource
     protected static ?string $navigationGroup = 'Access Control';
     protected static ?string $navigationLabel = 'Permissions';
     protected static ?int    $navigationSort  = 1;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
     
     public static function form(Form $form): Form
     {

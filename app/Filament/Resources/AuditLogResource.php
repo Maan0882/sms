@@ -16,6 +16,11 @@ class AuditLogResource extends Resource
     protected static ?string $navigationGroup = 'System';
     protected static ?string $navigationLabel = 'Audit Logs';
     protected static ?int    $navigationSort  = 1;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
     
     // Audit logs are read-only — no creating or editing
     public static function canCreate(): bool { return false; }
