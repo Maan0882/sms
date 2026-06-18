@@ -18,7 +18,8 @@ class CohortResource extends Resource
     protected static ?string $navigationIcon  = 'heroicon-o-user-group';
     protected static ?string $navigationGroup = 'Programs';
     protected static ?string $navigationLabel = 'Cohorts';
-    protected static ?int    $navigationSort  = 4;
+    protected static ?string $slug            = 'cohorts';
+    protected static ?int    $navigationSort  = 5;
 
     public static function canAccess(): bool
     {

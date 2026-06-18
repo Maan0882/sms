@@ -15,12 +15,13 @@ class AdminReports extends Page
     protected static ?string $navigationLabel = 'Reports & Analytics';
     protected static ?string $title           = 'Reports & Analytics';
     protected static ?int    $navigationSort  = 7;
+    protected static ?string $slug            = 'reports-analytics';
     protected static string  $view            = 'filament.admin.pages.admin-reports';
 
     public static function canAccess(): bool
     {
         // Only SuperAdmins can access this page.
-        return auth()->user()->hasRole('admin');
+        return auth()->user()->hasRole(['super_admin','admin']);
     }
 
     public function getStats(): array

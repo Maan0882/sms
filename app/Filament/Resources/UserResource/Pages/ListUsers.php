@@ -26,7 +26,7 @@ class ListUsers extends ListRecords
         return [
             'All Users' => ListRecords\Tab::make()
                 ->icon('heroicon-o-user-group')
-                ->badge(User::count()),
+                ->badge(UserResource::getEloquentQuery()->count()),
 
             'Admins' => ListRecords\Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'admin')))

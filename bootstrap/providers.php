@@ -4,4 +4,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\Filament\AppPanelProvider::class,
     App\Providers\Filament\AuthPanelProvider::class,
+    Laravel\Sanctum\SanctumServiceProvider::class,
 ];

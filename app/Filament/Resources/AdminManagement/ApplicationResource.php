@@ -20,8 +20,9 @@ class ApplicationResource extends Resource
     protected static ?string $model           = Application::class;
     protected static ?string $navigationIcon  = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Applications';
+    protected static ?string $slug            = 'applications';
     protected static ?string $navigationLabel = 'Applications';
-    protected static ?int    $navigationSort  = 2;
+    protected static ?int    $navigationSort  = 3;
 
     public static function canAccess(): bool
     {

@@ -17,14 +17,14 @@ use Illuminate\Support\Collection;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use Spatie\Permission\Traits\HasRoles;
-// use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens;
 
 // #[Fillable(['name', 'email', 'password'])]
 // #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements Auditable, FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, SoftDeletes, AuditableTrait;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, AuditableTrait, HasApiTokens;
 
     protected $fillable = [
         'name',
@@ -130,6 +130,11 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
         return $this->hasOne(Mentor::class, 'user_id', 'id');
     }
 
+    public function student(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Student::class, 'user_id', 'id');
+    }
+
     public function getTenants(Panel $panel): array|Collection
     {
         // Super Admins don't have a specific institution to manage in the admin panel by default,
@@ -149,5 +154,25 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
         }
         
         return $this->institution_id === $tenant->id;
+    }
+
+    // -------------------------------------------------------
+    // Lifecycle Hooks
+    // -------------------------------------------------------
+ 
+    protected static function booted(): void
+    {
+        static::updated(function (User $user) {
+            if ($user->wasChanged('email')) {
+                if ($user->student) {
+                    $user->student->email = $user->email;
+                    $user->student->saveQuietly();
+                }
+                if ($user->mentor) {
+                    $user->mentor->email = $user->email;
+                    $user->mentor->saveQuietly();
+                }
+            }
+        });
     }
 }

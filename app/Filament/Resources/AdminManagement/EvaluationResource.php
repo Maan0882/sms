@@ -20,11 +20,12 @@ class EvaluationResource extends Resource
     protected static ?string $navigationIcon  = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationGroup = 'Applications';
     protected static ?string $navigationLabel = 'Evaluations';
+    protected static ?string $slug            = 'evaluations';
     protected static ?int    $navigationSort  = 3;
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('admin');
+        return auth()->user()->hasRole(['admin', 'mentor']);
     }
     
     public static function form(Form $form): Form

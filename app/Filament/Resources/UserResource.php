@@ -27,7 +27,7 @@ class UserResource extends Resource
     
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('super_admin');
+        return auth()->user()->hasRole(['super_admin', 'admin']);
     }
     
     public static function form(Form $form): Form
@@ -329,10 +329,18 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+        $user = Auth::user();
+
+        if ($user && $user->hasRole('admin') && ! $user->hasRole('super_admin')) {
+            $query->where('institution_id', $user->institution_id);
+        }
+
+        return $query;
     }
 
 // To Display total number of Users

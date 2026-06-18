@@ -101,4 +101,18 @@ class Student extends Model implements Auditable
     {
         return $query->whereNull('mentor_id');
     }
+ 
+    // -------------------------------------------------------
+    // Lifecycle Hooks
+    // -------------------------------------------------------
+ 
+    protected static function booted(): void
+    {
+        static::updated(function (Student $student) {
+            if ($student->wasChanged('email') && $student->user) {
+                $student->user->email = $student->email;
+                $student->user->saveQuietly(); 
+            }
+        });
+    }
 }
