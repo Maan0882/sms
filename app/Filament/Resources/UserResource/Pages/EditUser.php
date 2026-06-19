@@ -12,6 +12,17 @@ class EditUser extends EditRecord
 
     public array $oldRoles = [];
 
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+        if ($user && $user->hasRole('admin') && ! $user->isSuperAdmin()) {
+            $data['institution_id'] = $user->institution_id;
+        }
+
+        return $data;
+    }
+
     protected function beforeSave(): void
     {
         $this->oldRoles = $this->record->roles->pluck('name')->toArray();

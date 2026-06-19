@@ -43,4 +43,9 @@ class Cohort extends Model implements Auditable
     {
         return $this->belongsTo(Institution::class);
     }
+
+    public function attendances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

@@ -23,7 +23,7 @@ class ManageRolesPermissions extends Page
     public static function canAccess(): bool
     {
         // Only SuperAdmins can access this page.
-        return auth()->user()->hasRole('super_admin');
+        return auth()->user()->hasRole(['super_admin','admin']);
     }
     // ── Form state ─────────────────────────────────────────────────────
 

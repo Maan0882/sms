@@ -23,15 +23,19 @@ class ListUsers extends ListRecords
 
     public function getTabs(): array
     {
-        return [
+        $tabs = [
             'All Users' => ListRecords\Tab::make()
                 ->icon('heroicon-o-user-group')
                 ->badge(UserResource::getEloquentQuery()->count()),
+        ];
 
-            'Admins' => ListRecords\Tab::make()
+        if (auth()->user()->hasRole('super_admin')) {
+            $tabs['Admins'] = ListRecords\Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'admin')))
-                ->icon('heroicon-o-users'),
+                ->icon('heroicon-o-users');
+        }
 
+        $tabs = array_merge($tabs, [
             'Mentors' => ListRecords\Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereHas('roles', fn ($q) => $q->where('name', 'mentor')))
                 ->icon('heroicon-o-academic-cap'),
@@ -51,6 +55,8 @@ class ListUsers extends ListRecords
             'Deleted Users' => ListRecords\Tab::make()
                 ->icon('heroicon-o-trash')
                 ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),
-        ];
+        ]);
+
+        return $tabs;
     }
 }

@@ -45,6 +45,7 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
 
     // What fields to never track (sensitive)
     protected array $auditExclude = [
+        'password',
         'remember_token',
     ];
 
@@ -132,6 +133,11 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
     public function student(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Student::class, 'user_id', 'id');
+    }
+
+    public function mentorAttendances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Attendance::class, 'mentor_id');
     }
 
     public function getTenants(Panel $panel): array|Collection

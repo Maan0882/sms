@@ -26,30 +26,61 @@ class AdminReports extends Page
 
     public function getStats(): array
     {
-        return [
-            'total_students'      => User::role('student')->count(),
-            'total_mentors'       => User::role('mentor')->count(),
-            'total_programs'      => Program::where('is_active', true)->count(),
-            'total_applications'  => Application::count(),
-            'pending_apps'        => Application::where('status', 'pending')->count(),
-            'approved_apps'       => Application::where('status', 'approved')->count(),
-            'rejected_apps'       => Application::where('status', 'rejected')->count(),
-            'total_evaluations'   => Evaluation::count(),
-            'avg_score'           => round(Evaluation::avg('score'), 2) ?? 0,
-            'pass_rate'           => $this->getPassRate(),
+        $user = auth()->user();
+        $isSuperAdmin = $user->hasRole('super_admin');
+        $institutionId = $user->institution_id;
+
+        $userQuery = User::query();
+        $programQuery = Program::query();
+        $applicationQuery = Application::query();
+        $evaluationQuery = Evaluation::query();
+
+        if (!$isSuperAdmin && $institutionId) {
+            $userQuery->where('institution_id', $institutionId);
+            $programQuery->where('institution_id', $institutionId);
+            $applicationQuery->where('institution_id', $institutionId);
+            $evaluationQuery->where('institution_id', $institutionId);
+        }
+
+        $stats = [
+            'total_students'      => (clone $userQuery)->role('student')->count(),
+            'total_mentors'       => (clone $userQuery)->role('mentor')->count(),
+            'total_programs'      => (clone $programQuery)->where('is_active', true)->count(),
+            'total_applications'  => (clone $applicationQuery)->count(),
+            'pending_apps'        => (clone $applicationQuery)->where('status', 'pending')->count(),
+            'approved_apps'       => (clone $applicationQuery)->where('status', 'approved')->count(),
+            'rejected_apps'       => (clone $applicationQuery)->where('status', 'rejected')->count(),
+            'total_evaluations'   => (clone $evaluationQuery)->count(),
+            'avg_score'           => round((clone $evaluationQuery)->avg('score'), 2) ?? 0,
+            'pass_rate'           => $this->getPassRate($evaluationQuery),
         ];
+
+        if ($isSuperAdmin) {
+            $stats['institutes'] = User::role('student')->whereNotNull('institution_id')->distinct('institution_id')->count('institution_id');
+        }
+
+        return $stats;
     }
 
-    private function getPassRate(): float
+    private function getPassRate($evaluationQuery = null): float
     {
-        $total  = Evaluation::whereNotNull('grade')->count();
-        $passed = Evaluation::whereNotIn('grade', ['D', 'F'])->count();
+        $evaluationQuery = $evaluationQuery ?: Evaluation::query();
+        $total  = (clone $evaluationQuery)->whereNotNull('grade')->count();
+        $passed = (clone $evaluationQuery)->whereNotIn('grade', ['D', 'F'])->count();
         return $total > 0 ? round(($passed / $total) * 100, 1) : 0;
     }
 
     public function getApplicationsByProgram(): array
     {
-        return Program::withCount('applications')
+        $user = auth()->user();
+        $isSuperAdmin = $user->hasRole('super_admin');
+
+        $query = Program::withCount('applications');
+        if (!$isSuperAdmin && $user->institution_id) {
+            $query->where('institution_id', $user->institution_id);
+        }
+
+        return $query
             ->having('applications_count', '>', 0)
             ->get()
             ->map(fn ($p) => [
@@ -61,9 +92,17 @@ class AdminReports extends Page
 
     public function getGradeDistribution(): array
     {
-        return Evaluation::selectRaw('grade, COUNT(*) as count')
-            ->whereNotNull('grade')
-            ->groupBy('grade')
+        $user = auth()->user();
+        $isSuperAdmin = $user->hasRole('super_admin');
+
+        $query = Evaluation::selectRaw('grade, COUNT(*) as count')
+            ->whereNotNull('grade');
+            
+        if (!$isSuperAdmin && $user->institution_id) {
+            $query->where('institution_id', $user->institution_id);
+        }
+
+        return $query->groupBy('grade')
             ->orderBy('grade')
             ->pluck('count', 'grade')
             ->toArray();

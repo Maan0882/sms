@@ -13,6 +13,10 @@ class CreateStudent extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $institutionId = \Filament\Facades\Filament::getTenant()?->id;
+        
+        if (!$institutionId && auth()->user() && auth()->user()->hasRole('admin') && !auth()->user()->isSuperAdmin()) {
+            $institutionId = auth()->user()->institution_id;
+        }
 
         $user = \App\Models\User::create([
             'name' => $data['first_name'] . ' ' . $data['last_name'],
@@ -25,6 +29,7 @@ class CreateStudent extends CreateRecord
         $user->assignRole('student');
 
         $data['user_id'] = $user->id;
+        $data['institution_id'] = $institutionId;
         
         // Remove password from data so it doesn't cause SQL errors
         unset($data['password']);

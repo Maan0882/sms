@@ -6,6 +6,18 @@
     @endphp
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          @if(isset($stats['institutes']))
+        <x-filament::section>
+            <div class="flex items-center gap-4">
+                <x-heroicon-o-building-office-2 class="w-8 h-8 text-primary-500" />
+                <div>
+                    <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Institutes</h2>
+                    <p class="text-3xl font-semibold tracking-tight text-gray-950 dark:text-white">{{ $stats['institutes'] }}</p>
+                </div>
+            </div>
+        </x-filament::section>
+        @endif
+        
         <x-filament::section>
             <div class="flex items-center gap-4">
                 <x-heroicon-o-users class="w-8 h-8 text-primary-500" />
@@ -45,6 +57,8 @@
                 </div>
             </div>
         </x-filament::section>
+
+      
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

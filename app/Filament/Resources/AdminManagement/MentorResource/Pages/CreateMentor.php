@@ -10,6 +10,15 @@ class CreateMentor extends CreateRecord
 {
     protected static string $resource = MentorResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = auth()->user();
+        if ($user && $user->hasRole('admin') && ! $user->isSuperAdmin()) {
+            $data['institution_id'] = $user->institution_id;
+        }
+        return $data;
+    }
+
     protected function afterCreate(): void
     {
         /** @var \App\Models\User $record */
