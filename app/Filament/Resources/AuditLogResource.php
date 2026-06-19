@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AuditLogResource extends Resource
 {
@@ -19,7 +20,7 @@ class AuditLogResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('super_admin');
+        return auth()->user()->hasRole('super_admin') || auth()->user()->hasPermissionTo('audit_log.view');
     }
     
     // Audit logs are read-only — no creating or editing
@@ -174,6 +175,31 @@ class AuditLogResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->striped()
             ->paginated([25, 50, 100]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && $user->hasRole('super_admin')) {
+            return $query;
+        }
+
+        if ($user && $user->hasRole('admin')) {
+            return $query->where(function (Builder $q) use ($user) {
+                $q->whereHas('user', function (Builder $userQuery) use ($user) {
+                    $userQuery->whereHas('roles', function (Builder $roleQuery) {
+                        $roleQuery->whereIn('name', ['admin', 'mentor', 'student']);
+                    });
+                    if ($user->institution_id) {
+                        $userQuery->where('institution_id', $user->institution_id);
+                    }
+                });
+            });
+        }
+
+        return $query->whereRaw('1 = 0');
     }
 
     public static function getRelations(): array

@@ -22,7 +22,7 @@ class ProgramResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('admin');
+        return auth()->user()->hasAnyRole(['super_admin', 'admin']) || auth()->user()->hasPermissionTo('program.view');
     }
     
     // ── FORM ──────────────────────────────────────────────────────────

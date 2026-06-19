@@ -25,7 +25,7 @@ class EvaluationResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole(['admin', 'mentor']);
+        return auth()->user()->hasAnyRole(['super_admin', 'admin', 'mentor']) || auth()->user()->hasPermissionTo('evaluation.view');
     }
     
     public static function form(Form $form): Form

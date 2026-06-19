@@ -75,6 +75,54 @@ class SuperAdminSeeder extends Seeder
             'backup.download',
             'backup.delete',
 
+            // Programs
+            'program.view',
+            'program.create',
+            'program.update',
+            'program.delete',
+
+            // Cohorts
+            'cohort.view',
+            'cohort.create',
+            'cohort.update',
+            'cohort.delete',
+
+            // Applications
+            'application.view',
+            'application.create',
+            'application.update',
+            'application.delete',
+
+            // Evaluations
+            'evaluation.view',
+            'evaluation.create',
+            'evaluation.update',
+            'evaluation.delete',
+
+            // Institutions
+            'institution.view',
+            'institution.create',
+            'institution.update',
+            'institution.delete',
+
+            // Tasks
+            'task.view',
+            'task.create',
+            'task.update',
+            'task.delete',
+
+            // Attendance
+            'attendance.view',
+            'attendance.create',
+            'attendance.update',
+            'attendance.delete',
+
+            // Interviews
+            'interview.view',
+            'interview.create',
+            'interview.update',
+            'interview.delete',
+
             // Global role assignment
             'role.assign_globally',
             'permission.assign_globally',
@@ -95,6 +143,10 @@ class SuperAdminSeeder extends Seeder
             'mentor.view', 'mentor.create', 'mentor.update', 'mentor.delete',
             'student.view', 'student.create', 'student.update', 'student.delete',
             'audit_log.view',
+            'evaluation.view', 'evaluation.create', 'evaluation.update', 'evaluation.delete',
+            'task.view', 'task.create', 'task.update', 'task.delete',
+            'attendance.view', 'attendance.create', 'attendance.update', 'attendance.delete',
+            'interview.view', 'interview.create', 'interview.update', 'interview.delete',
         ]);
 
         // Mentor — scoped access

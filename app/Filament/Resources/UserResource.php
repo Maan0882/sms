@@ -27,7 +27,7 @@ class UserResource extends Resource
     
     public static function canAccess(): bool
     {
-        return auth()->user()->hasRole(['super_admin', 'admin']);
+        return auth()->user()->hasAnyRole(['super_admin', 'admin']) || auth()->user()->hasPermissionTo('user.view');
     }
     
     public static function form(Form $form): Form
@@ -123,17 +123,38 @@ class UserResource extends Resource
                             ->label('Assign Role')
                             ->required()
                             ->multiple()
-                            ->relationship('roles', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('name', '!=', 'super_admin'))
+                            ->relationship('roles', 'name', modifyQueryUsing: function (Builder $query) {
+                                $user = Auth::user();
+                                if ($user->hasRole('super_admin')) {
+                                    return $query;
+                                }
+                                return $query->whereIn('name', ['mentor', 'student']);
+                            })
                             ->live()
                             ->disabled(function () {
-                                /** @var \App\Models\User $user */
                                 $user = Auth::user();
-
-                                return ! ($user?->isSuperAdmin());
+                                return ! $user->hasAnyRole(['super_admin', 'admin']);
                             })
                             ->preload()
                             ->searchable()
                             ->helperText('A user can have multiple roles'),
+
+                        Forms\Components\CheckboxList::make('permissions')
+                            ->label('Assign Direct Permissions')
+                            ->relationship('permissions', 'name', modifyQueryUsing: function (Builder $query) {
+                                $user = Auth::user();
+                                if ($user->hasRole('super_admin')) {
+                                    return $query;
+                                }
+                                return $query->whereIn('name', $user->getAllPermissions()->pluck('name')->toArray());
+                            })
+                            ->disabled(function () {
+                                $user = Auth::user();
+                                return ! $user->hasAnyRole(['super_admin', 'admin']);
+                            })
+                            ->columns(3)
+                            ->gridDirection('row')
+                            ->helperText('Assign direct permissions to this user'),
 
                     ])
                     ->columns(1)
