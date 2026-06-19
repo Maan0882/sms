@@ -87,6 +87,15 @@ class InstitutionResource extends Resource
                             ])
                             ->default('active')
                             ->required(),
+
+                        Forms\Components\Select::make('mode')
+                            ->label('System Mode')
+                            ->options([
+                                'student_management' => 'Student Management Mode',
+                                'internship_management' => 'Internship Management Mode',
+                            ])
+                            ->default('student_management')
+                            ->required(),
                             
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
@@ -127,6 +136,19 @@ class InstitutionResource extends Resource
                     ->label('Sub Expires')
                     ->date('d M Y')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('mode')
+                    ->label('Mode')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'student_management' => 'info',
+                        'internship_management' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'student_management' => 'Student Management',
+                        'internship_management' => 'Internship Management',
+                        default => $state,
+                    }),
                 Tables\Columns\TextColumn::make('contact_email')
                     ->placeholder("Institution's Email")
                     ->searchable(),

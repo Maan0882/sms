@@ -22,7 +22,18 @@ class Institution extends Model
         'subscription_id',
         'subscription_expires_at',
         'subscription_status',
+        'mode',
     ];
+
+    public function isStudentManagement(): bool
+    {
+        return $this->mode === 'student_management';
+    }
+
+    public function isInternshipManagement(): bool
+    {
+        return $this->mode === 'internship_management';
+    }
 
     protected $casts = [
         'is_active' => 'boolean',

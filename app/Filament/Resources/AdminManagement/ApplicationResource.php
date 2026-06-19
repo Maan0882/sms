@@ -26,7 +26,21 @@ class ApplicationResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->hasAnyRole(['super_admin', 'admin']) || auth()->user()->hasPermissionTo('application.view');
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->hasRole('super_admin')) {
+            return false;
+        }
+
+        $institution = $user->institution;
+        if (!$institution || $institution->mode !== 'internship_management') {
+            return false;
+        }
+
+        return $user->hasAnyRole(['admin']) || $user->hasPermissionTo('application.view');
     }
 
     public static function form(Form $form): Form
