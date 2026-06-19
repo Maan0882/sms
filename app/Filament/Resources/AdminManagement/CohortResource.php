@@ -33,7 +33,7 @@ class CohortResource extends Resource
         }
 
         $institution = $user->institution;
-        if (!$institution || $institution->mode !== 'student_management') {
+        if (!$institution || !\App\Models\ModeConfig::isResourceEnabled($institution->mode, 'cohorts')) {
             return false;
         }
 

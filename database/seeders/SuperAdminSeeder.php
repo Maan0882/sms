@@ -172,10 +172,22 @@ class SuperAdminSeeder extends Seeder
 
         $superAdmin->assignRole($superAdminRole);
 
+        // Seed Mode Configurations
+        \App\Models\ModeConfig::updateOrCreate(
+            ['mode' => 'student_management'],
+            ['resources' => ['programs', 'cohorts', 'students', 'evaluations']]
+        );
+
+        \App\Models\ModeConfig::updateOrCreate(
+            ['mode' => 'internship_management'],
+            ['resources' => ['applications']]
+        );
+
         $this->command->info('✅ Super Admin created: superadmin@sms.local');
         $this->command->info('🔑 Default password: SuperAdmin@123 — CHANGE THIS IN PRODUCTION!');
         $this->command->info('🛡️  Roles created: super_admin, admin, mentor, student');
         $this->command->info('🔒 Permissions created: '.count($permissions).' permissions');
+        $this->command->info('⚙️  Mode configs seeded successfully.');
 
     }
 }

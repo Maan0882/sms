@@ -41,7 +41,7 @@ class StudentResource extends Resource
         }
 
         $institution = $user->institution;
-        if (!$institution || $institution->mode !== 'student_management') {
+        if (!$institution || !\App\Models\ModeConfig::isResourceEnabled($institution->mode, 'students')) {
             return false;
         }
 

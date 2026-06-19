@@ -32,7 +32,7 @@ class ProgramResource extends Resource
         }
 
         $institution = $user->institution;
-        if (!$institution || $institution->mode !== 'student_management') {
+        if (!$institution || !\App\Models\ModeConfig::isResourceEnabled($institution->mode, 'programs')) {
             return false;
         }
 

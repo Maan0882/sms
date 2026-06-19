@@ -36,7 +36,7 @@ class ApplicationResource extends Resource
         }
 
         $institution = $user->institution;
-        if (!$institution || $institution->mode !== 'internship_management') {
+        if (!$institution || !\App\Models\ModeConfig::isResourceEnabled($institution->mode, 'applications')) {
             return false;
         }
 
