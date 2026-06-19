@@ -31,13 +31,11 @@ class ModeConfigResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('mode')
                             ->label('System Mode')
-                            ->disabled()
+                            ->disabled(fn (string $operation): bool => $operation === 'edit')
                             ->required()
-                            ->formatStateUsing(fn ($state) => match ($state) {
-                                'student_management' => 'Student Management Mode',
-                                'internship_management' => 'Internship Management Mode',
-                                default => $state,
-                            }),
+                            ->placeholder('e.g. training_mode')
+                            ->helperText('Lowercase, alphanumeric, and underscores only')
+                            ->unique(ModeConfig::class, 'mode', ignoreRecord: true),
                     ]),
 
                 Forms\Components\Section::make('Resource Visibility')
@@ -85,10 +83,15 @@ class ModeConfigResource extends Resource
                     ->formatStateUsing(fn ($state) => ucfirst($state)),
             ])
             ->filters([])
-            ->actions([
+             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getRelations(): array
@@ -100,6 +103,7 @@ class ModeConfigResource extends Resource
     {
         return [
             'index' => Pages\ListModeConfigs::route('/'),
+            'create' => Pages\CreateModeConfig::route('/create'),
             'edit' => Pages\EditModeConfig::route('/{record}/edit'),
         ];
     }
