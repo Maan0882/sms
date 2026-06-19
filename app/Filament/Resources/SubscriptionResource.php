@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubscriptionResource\Pages;
+use App\Filament\Resources\SubscriptionResource\RelationManagers;
 use App\Models\Subscription;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -56,6 +57,7 @@ class SubscriptionResource extends Resource
                         ->label('Billing Cycle')
                         ->options([
                             'monthly' => 'Monthly',
+                            '6_months' => '6 Months',
                             'yearly'  => 'Yearly',
                         ])
                         ->required(),
@@ -95,12 +97,22 @@ class SubscriptionResource extends Resource
                 ->columns(3),
 
             Forms\Components\Section::make('Features')
-                ->description('List features included in this plan')
+                ->description('Select the features included in this plan')
                 ->schema([
-                    Forms\Components\TagsInput::make('features')
+                    Forms\Components\CheckboxList::make('features')
                         ->label('Included Features')
-                        ->placeholder('Type a feature and press Enter')
-                        ->helperText('e.g. "Export Reports", "Audit Logs", "Priority Support"'),
+                        ->options([
+                            'programs_cohorts'   => 'Programs & Cohorts Management',
+                            'applications'       => 'Admissions & Applications Management',
+                            'evaluations'        => 'Student Evaluations & Grading',
+                            'mentors'            => 'Mentors Directory & Management',
+                            'students'           => 'Students & Cohort Enrollment',
+                            'audit_logs'         => 'Security & Audit Logs Access',
+                            'backups'            => 'System Backups Access',
+                            'reports_analytics'  => 'Reports & Analytics Dashboard Access',
+                        ])
+                        ->columns(2)
+                        ->gridDirection('row'),
                 ]),
         ]);
     }
@@ -131,8 +143,15 @@ class SubscriptionResource extends Resource
                 Tables\Columns\TextColumn::make('billing_cycle')
                     ->label('Billing')
                     ->badge()
-                    ->color(fn ($state) => $state === 'yearly' ? 'success' : 'info')
-                    ->formatStateUsing(fn ($state) => ucfirst($state)),
+                    ->color(fn ($state) => match ($state) {
+                        'yearly' => 'success',
+                        '6_months' => 'warning',
+                        default => 'info',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        '6_months' => '6 Months',
+                        default => ucfirst($state),
+                    }),
 
                 Tables\Columns\TextColumn::make('max_students')
                     ->label('Max Students')
@@ -169,7 +188,7 @@ class SubscriptionResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('billing_cycle')
-                    ->options(['monthly' => 'Monthly', 'yearly' => 'Yearly']),
+                    ->options(['monthly' => 'Monthly', '6_months' => '6 Months', 'yearly' => 'Yearly']),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Status'),
             ])
@@ -206,7 +225,7 @@ class SubscriptionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\InstitutionsRelationManager::class,
         ];
     }
 

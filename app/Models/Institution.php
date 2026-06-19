@@ -19,11 +19,20 @@ class Institution extends Model
         'address',
         'logo_url',
         'is_active',
+        'subscription_id',
+        'subscription_expires_at',
+        'subscription_status',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'subscription_expires_at' => 'date',
     ];
+
+    public function subscription(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
 
     public function users(): HasMany
     {

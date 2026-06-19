@@ -45,7 +45,6 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasTenant
 
     // What fields to never track (sensitive)
     protected array $auditExclude = [
-        'password',
         'remember_token',
     ];
 

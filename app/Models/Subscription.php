@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Subscription extends Model
+class Subscription extends Model implements Auditable
 {
    use SoftDeletes, AuditableTrait;
 
@@ -50,5 +50,10 @@ class Subscription extends Model
         if (! $this->is_active)   return 'inactive';
         if ($this->daysUntilExpiry() <= 7) return 'expiring_soon';
         return 'active';
+    }
+
+    public function institutions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Institution::class);
     }
 }

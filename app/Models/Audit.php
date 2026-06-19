@@ -34,25 +34,30 @@ class Audit extends AuditModel
             $newValue = $this->event === 'deleted' ? null : $value;
             $oldValue = $this->old_values[$field] ?? null;
 
-            if ($this->event === 'created') {
-                $oldValue = 'empty';
-            } elseif ($this->event === 'deleted') {
-                $newValue = 'deleted';
-            }
+            if ($field === 'password') {
+                $oldValue = '********';
+                $newValue = '********';
+            } else {
+                if ($this->event === 'created') {
+                    $oldValue = 'empty';
+                } elseif ($this->event === 'deleted') {
+                    $newValue = 'deleted';
+                }
 
-            // Clean up boolean values for display
-            if (is_bool($newValue) || in_array($newValue, [0, 1], true)) {
-                $newValue = $newValue ? 'Yes' : 'No';
-            }
-            if (is_bool($oldValue) || in_array($oldValue, [0, 1], true)) {
-                $oldValue = $oldValue ? 'Yes' : 'No';
-            }
+                // Clean up boolean values for display
+                if (is_bool($newValue) || in_array($newValue, [0, 1], true)) {
+                    $newValue = $newValue ? 'Yes' : 'No';
+                }
+                if (is_bool($oldValue) || in_array($oldValue, [0, 1], true)) {
+                    $oldValue = $oldValue ? 'Yes' : 'No';
+                }
 
-            if (is_array($newValue)) $newValue = json_encode($newValue);
-            if (is_array($oldValue)) $oldValue = json_encode($oldValue);
-            
-            if ($oldValue === null) $oldValue = 'empty';
-            if ($newValue === null) $newValue = 'empty';
+                if (is_array($newValue)) $newValue = json_encode($newValue);
+                if (is_array($oldValue)) $oldValue = json_encode($oldValue);
+                
+                if ($oldValue === null) $oldValue = 'empty';
+                if ($newValue === null) $newValue = 'empty';
+            }
 
             $changes[] = "{$field}: {$oldValue} → {$newValue}";
         }

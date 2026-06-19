@@ -66,6 +66,28 @@ class InstitutionResource extends Resource
                             )
                             ->columnSpanFull(),
                             
+                        Forms\Components\Select::make('subscription_id')
+                            ->relationship('subscription', 'plan_name')
+                            ->searchable()
+                            ->preload()
+                            ->nullable()
+                            ->label('Subscription Plan'),
+
+                        Forms\Components\DatePicker::make('subscription_expires_at')
+                            ->label('Subscription Expiry Date')
+                            ->nullable(),
+
+                        Forms\Components\Select::make('subscription_status')
+                            ->label('Subscription Status')
+                            ->options([
+                                'active' => 'Active',
+                                'pending_renewal' => 'Pending Renewal',
+                                'pending_cancellation' => 'Pending Cancellation',
+                                'expired' => 'Expired',
+                            ])
+                            ->default('active')
+                            ->required(),
+                            
                         Forms\Components\Toggle::make('is_active')
                             ->default(true),
                     ])->columns(2),
@@ -84,6 +106,26 @@ class InstitutionResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->placeholder('Institution Name')
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subscription.plan_name')
+                    ->label('Subscription')
+                    ->badge()
+                    ->color('success')
+                    ->placeholder('No Plan')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subscription_status')
+                    ->label('Sub Status')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'active' => 'success',
+                        'pending_renewal' => 'warning',
+                        'pending_cancellation' => 'danger',
+                        'expired' => 'gray',
+                        default => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('subscription_expires_at')
+                    ->label('Sub Expires')
+                    ->date('d M Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('contact_email')
                     ->placeholder("Institution's Email")

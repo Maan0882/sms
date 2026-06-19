@@ -38,6 +38,42 @@ class AppPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ->profile(\App\Filament\Pages\Auth\CustomEditProfile::class)
+            ->userMenuItems([
+                \Filament\Navigation\MenuItem::make()
+                    ->label('Change Password')
+                    ->url('javascript:Livewire.dispatch(\'open-change-password-modal\')')
+                    ->icon('heroicon-o-key'),
+            ])
+            ->renderHook(
+                'panels::head.end',
+                fn (): string => '
+                    <style>
+                        /* Glassmorphism for Simple Layout Cards (Profile, Login, etc.) */
+                        .fi-simple-main {
+                            background: rgba(24, 24, 27, 0.4) !important;
+                            backdrop-filter: blur(16px) saturate(180%) !important;
+                            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+                            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+                            border-radius: 1rem !important;
+                        }
+                        .fi-simple-layout {
+                            background: radial-gradient(circle at center, #18181b 0%, #09090b 100%) !important;
+                        }
+                        /* Glassmorphism & Blur backdrop for modals */
+                        .fi-modal-close-overlay {
+                            backdrop-filter: blur(8px) !important;
+                            -webkit-backdrop-filter: blur(8px) !important;
+                            background: rgba(0, 0, 0, 0.5) !important;
+                        }
+                    </style>
+                ',
+            )
+            ->renderHook(
+                'panels::body.end',
+                fn (): string => \Illuminate\Support\Facades\Blade::render("@livewire('change-password-modal')"),
+            )
             ->navigationGroups([
                 NavigationGroup::make('Institute Management')
                     ->collapsed(false),
